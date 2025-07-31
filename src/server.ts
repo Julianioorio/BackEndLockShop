@@ -1,30 +1,28 @@
-import express from 'express';
-import cors from 'cors';
-import mysql from 'mysql2/promise';
+import express from "express";
+import cors from "cors";
+import { Request, Response } from "express";
+import { getNextProducts } from "./db";
 
 const app = express();
 const PORT = 3000;
 
-
 app.use(cors());
 app.use(express.json());
 
-export const pool = mysql.createPool({
-    host: 'localhost',      
-    user: 'root',           
-    password: 'julianMak',
-    database: 'my_db_lockshop',   
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-  });
+app.get("/api/products", async (req: Request, res: Response) => {
+  try {
+    if (typeof req.query.id !== "string") return;
+    const id = parseInt(req.query.id);
 
-
-app.get('/', (req, res) => {
-  res.send('Сервер работает ура!');
+    const product = await getNextProducts(id);
+    if (!product) {
+      return res.status(404).json({ error: "Товар не найден" });
+    }
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: "Ошибка при получении товара" });
+  }
 });
-
-
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
