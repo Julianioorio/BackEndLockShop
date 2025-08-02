@@ -11,14 +11,16 @@ app.use(express.json());
 
 app.get("/api/products", async (req: Request, res: Response) => {
   try {
-    if (typeof req.query.id !== "string") return;
+    if (typeof req.query.id !== "string") {
+  return res.status(400).json({ error: "Некорректный параметр id" });
+}
     const id = parseInt(req.query.id);
 
     const product = await getNextProducts(id);
     if (!product) {
       return res.status(404).json({ error: "Товар не найден" });
     }
-    res.json(product);
+    res.json([product]);
   } catch (error) {
     res.status(500).json({ error: "Ошибка при получении товара" });
   }

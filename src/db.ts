@@ -12,7 +12,7 @@ export const pool = mysql.createPool({
 
 // Получить limit товаров начиная с offset
 export async function getNextProducts(offset: number, limit: number = 1) {
-  const [rows]: any[] = await pool.query("SELECT id, title, price, image FROM products LIMIT ? OFFSET ?", [limit, offset]);
+  const [rows]: any[] = await pool.query("SELECT id, title, price, image, short_description FROM products LIMIT ? OFFSET ?", [limit, offset]);
   const products = rows[0];
   return {
     ...products,
